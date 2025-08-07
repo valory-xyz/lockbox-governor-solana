@@ -1,0 +1,599 @@
+error: spellcheck(Hunspell)
+  --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/state/config.rs:6
+   |
+ 6 |  [BridgeData](wormhole_anchor_sdk::wormhole::BridgeData) address.
+   |   ^^^^^^^^^^
+   | - Bridge Data, Bridge-data, or Bridgehead
+   |
+   |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+  --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/state/config.rs:8
+   |
+ 8 |  [FeeCollector](wormhole_anchor_sdk::wormhole::FeeCollector) address.
+   |   ^^^^^^^^^^^^
+   | - Fee Collector, Fee-collector, or Collector
+   |
+   |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+   --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/state/config.rs:10
+    |
+ 10 |  [SequenceTracker](wormhole_anchor_sdk::wormhole::SequenceTracker) address.
+    |   ^^^^^^^^^^^^^^^
+    | - Sequence Tracker, Sequence-tracker, or Sequestration
+    |
+    |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+   --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/state/config.rs:24
+    |
+ 24 |  Config account data.
+    |  ^^^^^^
+    | - Con fig, Con-fig, or Configure
+    |
+    |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+   --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/state/config.rs:28
+    |
+ 28 |  AKA consistency level. u8 representation of Solana's
+    |                         ^^
+    | - us, ut, um, up, or uh
+    |
+    |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+   --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/state/config.rs:28
+    |
+ 28 |  AKA consistency level. u8 representation of Solana's
+    |                                              ^^^^^^^^
+    | - Solans, Solano, or Solan
+    |
+    |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+  --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/state/received.rs:9
+   |
+ 9 |  Keccak256 hash of verified Wormhole message.
+   |  ^^^^^^^^^
+   |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+   --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:34
+    |
+ 34 |  Config account, which saves program data useful for other instructions.
+    |  ^^^^^^
+    | - Con fig, Con-fig, or Configure
+    |
+    |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+   --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:55
+    |
+ 55 |  Config account. Wormhole PDAs specified in the config are checked
+    |  ^^^^^^
+    | - Con fig, Con-fig, or Configure
+    |
+    |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+   --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:55
+    |
+ 55 |  Config account. Wormhole PDAs specified in the config are checked
+    |                           ^^^^
+    | - Pd As, PD As, PD-As, Pads, Pas, Peas, Pyas, or one of 5 others
+    |
+    |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+   --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:55
+    |
+ 55 |  Config account. Wormhole PDAs specified in the config are checked
+    |                                                 ^^^^^^
+    | - con fig, con-fig, or configure
+    |
+    |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+   --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:87
+    |
+ 87 |  deserialize the Wormhole message's payload and save it to this account.
+    |  ^^^^^^^^^^^
+    | - de serialize, de-serialize, serialize, dematerialize, desexualize, or desalinize
+    |
+    |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:123
+     |
+ 123 |  Config account. Wormhole PDAs specified in the config are checked
+     |  ^^^^^^
+     | - Con fig, Con-fig, or Configure
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:123
+     |
+ 123 |  Config account. Wormhole PDAs specified in the config are checked
+     |                           ^^^^
+     | - Pd As, PD As, PD-As, Pads, Pas, Peas, Pyas, or one of 5 others
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:123
+     |
+ 123 |  Config account. Wormhole PDAs specified in the config are checked
+     |                                                 ^^^^^^
+     | - con fig, con-fig, or configure
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:155
+     |
+ 155 |  deserialize the Wormhole message's payload and save it to this account.
+     |  ^^^^^^^^^^^
+     | - de serialize, de-serialize, serialize, dematerialize, desexualize, or desalinize
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:205
+     |
+ 205 |  Config account. Wormhole PDAs specified in the config are checked
+     |  ^^^^^^
+     | - Con fig, Con-fig, or Configure
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:205
+     |
+ 205 |  Config account. Wormhole PDAs specified in the config are checked
+     |                           ^^^^
+     | - Pd As, PD As, PD-As, Pads, Pas, Peas, Pyas, or one of 5 others
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:205
+     |
+ 205 |  Config account. Wormhole PDAs specified in the config are checked
+     |                                                 ^^^^^^
+     | - con fig, con-fig, or configure
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:237
+     |
+ 237 |  deserialize the Wormhole message's payload and save it to this account.
+     |  ^^^^^^^^^^^
+     | - de serialize, de-serialize, serialize, dematerialize, desexualize, or desalinize
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:277
+     |
+ 277 |  Config account. Wormhole PDAs specified in the config are checked
+     |  ^^^^^^
+     | - Con fig, Con-fig, or Configure
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:277
+     |
+ 277 |  Config account. Wormhole PDAs specified in the config are checked
+     |                           ^^^^
+     | - Pd As, PD As, PD-As, Pads, Pas, Peas, Pyas, or one of 5 others
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:277
+     |
+ 277 |  Config account. Wormhole PDAs specified in the config are checked
+     |                                                 ^^^^^^
+     | - con fig, con-fig, or configure
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:309
+     |
+ 309 |  deserialize the Wormhole message's payload and save it to this account.
+     |  ^^^^^^^^^^^
+     | - de serialize, de-serialize, serialize, dematerialize, desexualize, or desalinize
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:314
+     |
+ 314 |  CHECK: Any program where the Config account is the upgrade authority.
+     |                               ^^^^^^
+     | - Con fig, Con-fig, or Configure
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:330
+     |
+ 330 |  CHECK: BPF Loader Upgraedable account.
+     |         ^^^
+     | - BP, BF, PF, BPS, BPM, B PF, BP F, or one of 1 others
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:330
+     |
+ 330 |  CHECK: BPF Loader Upgraedable account.
+     |                    ^^^^^^^^^^^
+     | - Upgradeable, Upgradable, or Recuperable
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:350
+     |
+ 350 |  Config account. Wormhole PDAs specified in the config are checked
+     |  ^^^^^^
+     | - Con fig, Con-fig, or Configure
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:350
+     |
+ 350 |  Config account. Wormhole PDAs specified in the config are checked
+     |                           ^^^^
+     | - Pd As, PD As, PD-As, Pads, Pas, Peas, Pyas, or one of 5 others
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:350
+     |
+ 350 |  Config account. Wormhole PDAs specified in the config are checked
+     |                                                 ^^^^^^
+     | - con fig, con-fig, or configure
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:382
+     |
+ 382 |  deserialize the Wormhole message's payload and save it to this account.
+     |  ^^^^^^^^^^^
+     | - de serialize, de-serialize, serialize, dematerialize, desexualize, or desalinize
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:387
+     |
+ 387 |  CHECK: Any program where the Config account is the upgrade authority.
+     |                               ^^^^^^
+     | - Con fig, Con-fig, or Configure
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:399
+     |
+ 399 |  CHECK: Buffer account to deploy a new program from. The Config account must be the upgrade authority.
+     |                                                          ^^^^^^
+     | - Con fig, Con-fig, or Configure
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/context.rs:407
+     |
+ 407 |  CHECK: BPF Loader Upgradeable account.
+     |         ^^^
+     | - BP, BF, PF, BPS, BPM, B PF, BP F, or one of 1 others
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+   --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:36
+    |
+ 36 |  Initializes a Lockbox Governor account, aka Config, that stores state data.
+    |                                              ^^^^^^
+    | - Con fig, Con-fig, or Configure
+    |
+    |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+   --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:41
+    |
+ 41 |  * `timelock` - Emitter Timelock address.
+    |                         ^^^^^^^^
+    | - Time lock, Time-lock, or Timeline
+    |
+    |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+   --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:73
+    |
+ 73 |  Transfers specified token amount to a governor specified ATA.
+    |                                                           ^^^
+    | - AT, AA, TA, ANTA, RATA, DATA, ATE, or one of 9 others
+    |
+    |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+   --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:75
+    |
+ 75 |  that the payload is of type TransferMessage (PAYLOAD_TRANSFER).
+    |                              ^^^^^^^^^^^^^^^
+    | - Transfer Message, Transfer-message, or Transferrable
+    |
+    |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+   --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:75
+    |
+ 75 |  that the payload is of type TransferMessage (PAYLOAD_TRANSFER).
+    |                                               ^^^^^^^^^^^^^^^^
+    | - NONTRANSFERABLE
+    |
+    |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+   --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:78
+    |
+ 78 |  See TransferMessage struct for deserialization implementation.
+    |      ^^^^^^^^^^^^^^^
+    | - Transfer Message, Transfer-message, or Transferrable
+    |
+    |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+   --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:78
+    |
+ 78 |  See TransferMessage struct for deserialization implementation.
+    |                      ^^^^^^
+    | - strict, strut, struck, structure, destruct, instruct, obstruct, or one of 1 others
+    |
+    |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+   --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:78
+    |
+ 78 |  See TransferMessage struct for deserialization implementation.
+    |                                 ^^^^^^^^^^^^^^^
+    | - de serialization, de-serialization, serialization, depersonalization, materialization, or demineralization
+    |
+    |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+   --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:82
+    |
+ 82 |  * `vaa_hash` - Keccak256 hash of verified Wormhole message.
+    |                 ^^^^^^^^^
+    |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:151
+     |
+ 151 |  Transfers all token balances to governor specified ATAs.
+     |                                                     ^^^^
+     | - At As, Atlas, Etas, Anas, Alas, Abas, At-as, or one of 5 others
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:153
+     |
+ 153 |  that the payload is of type TransferAllMessage (PAYLOAD_TRANSFER_ALL).
+     |                              ^^^^^^^^^^^^^^^^^^
+     | - Transferability
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:153
+     |
+ 153 |  that the payload is of type TransferAllMessage (PAYLOAD_TRANSFER_ALL).
+     |                                                  ^^^^^^^^^^^^^^^^^^^^
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:156
+     |
+ 156 |  See TransferAllMessage struct for deserialization implementation.
+     |      ^^^^^^^^^^^^^^^^^^
+     | - Transferability
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:156
+     |
+ 156 |  See TransferAllMessage struct for deserialization implementation.
+     |                         ^^^^^^
+     | - strict, strut, struck, structure, destruct, instruct, obstruct, or one of 1 others
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:156
+     |
+ 156 |  See TransferAllMessage struct for deserialization implementation.
+     |                                    ^^^^^^^^^^^^^^^
+     | - de serialization, de-serialization, serialization, depersonalization, materialization, or demineralization
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:160
+     |
+ 160 |  * `vaa_hash` - Keccak256 hash of verified Wormhole message.
+     |                 ^^^^^^^^^
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:257
+     |
+ 257 |  Transfers SOL and OLAS ATAs to a governor specified authority.
+     |                    ^^^^
+     | - OKAS, OLLAS, COLAS, MOLAS, BOLAS, KOLAS, SOLA, or one of 8 others
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:257
+     |
+ 257 |  Transfers SOL and OLAS ATAs to a governor specified authority.
+     |                         ^^^^
+     | - At As, Atlas, Etas, Anas, Alas, Abas, At-as, or one of 5 others
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:259
+     |
+ 259 |  that the payload is of type TransferTokenAccountsMessage (PAYLOAD_TRANSFER_TOKEN_ACCOUNTS).
+     |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:259
+     |
+ 259 |  that the payload is of type TransferTokenAccountsMessage (PAYLOAD_TRANSFER_TOKEN_ACCOUNTS).
+     |                                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:262
+     |
+ 262 |  See TransferTokenAccountsMessage struct for deserialization implementation.
+     |      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:262
+     |
+ 262 |  See TransferTokenAccountsMessage struct for deserialization implementation.
+     |                                   ^^^^^^
+     | - strict, strut, struck, structure, destruct, instruct, obstruct, or one of 1 others
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:262
+     |
+ 262 |  See TransferTokenAccountsMessage struct for deserialization implementation.
+     |                                              ^^^^^^^^^^^^^^^
+     | - de serialization, de-serialization, serialization, depersonalization, materialization, or demineralization
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:266
+     |
+ 266 |  * `vaa_hash` - Keccak256 hash of verified Wormhole message.
+     |                 ^^^^^^^^^
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:357
+     |
+ 357 |  that the payload is of type SetUpgradeAuthorityMessage (PAYLOAD_SET_UPGRADE_AUTHORITY).
+     |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:357
+     |
+ 357 |  that the payload is of type SetUpgradeAuthorityMessage (PAYLOAD_SET_UPGRADE_AUTHORITY).
+     |                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:360
+     |
+ 360 |  See SetUpgradeAuthorityMessage struct for deserialization implementation.
+     |      ^^^^^^^^^^^^^^^^^^^^^^^^^^
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:360
+     |
+ 360 |  See SetUpgradeAuthorityMessage struct for deserialization implementation.
+     |                                 ^^^^^^
+     | - strict, strut, struck, structure, destruct, instruct, obstruct, or one of 1 others
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:360
+     |
+ 360 |  See SetUpgradeAuthorityMessage struct for deserialization implementation.
+     |                                            ^^^^^^^^^^^^^^^
+     | - de serialization, de-serialization, serialization, depersonalization, materialization, or demineralization
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:364
+     |
+ 364 |  * `vaa_hash` - Keccak256 hash of verified Wormhole message.
+     |                 ^^^^^^^^^
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:418
+     |
+ 418 |  that the payload is of type UpgradeProgramMessage (PAYLOAD_UPGRADE_PROGRAM).
+     |                              ^^^^^^^^^^^^^^^^^^^^^
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:418
+     |
+ 418 |  that the payload is of type UpgradeProgramMessage (PAYLOAD_UPGRADE_PROGRAM).
+     |                                                     ^^^^^^^^^^^^^^^^^^^^^^^
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:421
+     |
+ 421 |  See UpgradeProgramMessage struct for deserialization implementation.
+     |      ^^^^^^^^^^^^^^^^^^^^^
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:421
+     |
+ 421 |  See UpgradeProgramMessage struct for deserialization implementation.
+     |                            ^^^^^^
+     | - strict, strut, struck, structure, destruct, instruct, obstruct, or one of 1 others
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:421
+     |
+ 421 |  See UpgradeProgramMessage struct for deserialization implementation.
+     |                                       ^^^^^^^^^^^^^^^
+     | - de serialization, de-serialization, serialization, depersonalization, materialization, or demineralization
+     |
+     |   Possible spelling mistake found.
+
+error: spellcheck(Hunspell)
+    --> /home/andrey/valory/lockbox-governor-solana/programs/lockbox_governor/src/lib.rs:425
+     |
+ 425 |  * `vaa_hash` - Keccak256 hash of verified Wormhole message.
+     |                 ^^^^^^^^^
+     |   Possible spelling mistake found.
+
+[?25h
