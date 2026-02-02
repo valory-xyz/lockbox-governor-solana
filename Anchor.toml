@@ -1,7 +1,7 @@
 [features]
 seeds = true
 [programs.localnet]
-fee_collector = "DWDGo2UkBUFZ3VitBfWRBMvRnHr7E2DSh57NK27xMYaB"
+lockbox_governor = "DWDGo2UkBUFZ3VitBfWRBMvRnHr7E2DSh57NK27xMYaB"
 
 [registry]
 url = "https://anchor.projectserum.com"
