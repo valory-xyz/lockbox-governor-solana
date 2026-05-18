@@ -14,6 +14,19 @@ rustc 1.74.1 (a28077b28 2023-12-04)
 
 Advise the script `setup-env.sh` to correctly install the required environment.
 
+## Lockbox Governor Flowchart
+```mermaid
+graph TD
+    Timelock@{ shape: div-rect, label: "Timelock" }
+    Governor[Lockbox Governor]
+    Lockbox[Liquidity Lockbox]
+    
+    Timelock==>|bridge governor instructions|Governor
+    Governor-->|transfer, transfer_all, transfer_token_accounts, set_program_upgrade_authority, upgrade_program|Lockbox
+    Lockbox-->|transfer|OLAS
+    Lockbox-->|transfer|SOL
+```
+
 ## Development
 Install the dependencies:
 ```
