@@ -2,5 +2,5 @@
 .anchor
 node_modules
 target
-!target/deploy/fee_collector-keypair.json
+!target/deploy/lockbox_governor-keypair.json
 test-ledger

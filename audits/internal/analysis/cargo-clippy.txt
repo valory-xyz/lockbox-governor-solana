@@ -1,0 +1,230 @@
+warning: equality checks against true are unnecessary
+   --> programs/lockbox_governor/src/context.rs:316:22
+    |
+316 |         constraint = program_account.executable == true,
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try simplifying it as shown: `program_account.executable`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#bool_comparison
+    = note: `#[warn(clippy::bool_comparison)]` on by default
+
+warning: equality checks against true are unnecessary
+   --> programs/lockbox_governor/src/context.rs:389:22
+    |
+389 |         constraint = program_account.executable == true,
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: try simplifying it as shown: `program_account.executable`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#bool_comparison
+
+warning: unneeded `return` statement
+  --> programs/lockbox_governor/src/state/config.rs:67:9
+   |
+67 |         return *check_address == self.foreign_emitter;
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#needless_return
+   = note: `#[warn(clippy::needless_return)]` on by default
+help: remove `return`
+   |
+67 -         return *check_address == self.foreign_emitter;
+67 +         *check_address == self.foreign_emitter
+   |
+
+warning: use of a fallible conversion when an infallible one could be used
+  --> programs/lockbox_governor/src/lib.rs:90:30
+   |
+90 |         let source_account = Pubkey::try_from(*source).unwrap();
+   |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: converting `[u8; 32]` to `Pubkey` cannot fail
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_fallible_conversions
+   = note: `#[warn(clippy::unnecessary_fallible_conversions)]` on by default
+help: use
+   |
+90 -         let source_account = Pubkey::try_from(*source).unwrap();
+90 +         let source_account = Pubkey::from(*source);
+   |
+
+warning: use of a fallible conversion when an infallible one could be used
+  --> programs/lockbox_governor/src/lib.rs:91:35
+   |
+91 |         let destination_account = Pubkey::try_from(*destination).unwrap();
+   |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: converting `[u8; 32]` to `Pubkey` cannot fail
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_fallible_conversions
+help: use
+   |
+91 -         let destination_account = Pubkey::try_from(*destination).unwrap();
+91 +         let destination_account = Pubkey::from(*destination);
+   |
+
+warning: use of a fallible conversion when an infallible one could be used
+   --> programs/lockbox_governor/src/lib.rs:168:34
+    |
+168 |         let source_account_sol = Pubkey::try_from(*source_sol).unwrap();
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: converting `[u8; 32]` to `Pubkey` cannot fail
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_fallible_conversions
+help: use
+    |
+168 -         let source_account_sol = Pubkey::try_from(*source_sol).unwrap();
+168 +         let source_account_sol = Pubkey::from(*source_sol);
+    |
+
+warning: use of a fallible conversion when an infallible one could be used
+   --> programs/lockbox_governor/src/lib.rs:169:35
+    |
+169 |         let source_account_olas = Pubkey::try_from(*source_olas).unwrap();
+    |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: converting `[u8; 32]` to `Pubkey` cannot fail
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_fallible_conversions
+help: use
+    |
+169 -         let source_account_olas = Pubkey::try_from(*source_olas).unwrap();
+169 +         let source_account_olas = Pubkey::from(*source_olas);
+    |
+
+warning: use of a fallible conversion when an infallible one could be used
+   --> programs/lockbox_governor/src/lib.rs:170:39
+    |
+170 |         let destination_account_sol = Pubkey::try_from(*destination_sol).unwrap();
+    |                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: converting `[u8; 32]` to `Pubkey` cannot fail
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_fallible_conversions
+help: use
+    |
+170 -         let destination_account_sol = Pubkey::try_from(*destination_sol).unwrap();
+170 +         let destination_account_sol = Pubkey::from(*destination_sol);
+    |
+
+warning: use of a fallible conversion when an infallible one could be used
+   --> programs/lockbox_governor/src/lib.rs:171:40
+    |
+171 |         let destination_account_olas = Pubkey::try_from(*destination_olas).unwrap();
+    |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: converting `[u8; 32]` to `Pubkey` cannot fail
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_fallible_conversions
+help: use
+    |
+171 -         let destination_account_olas = Pubkey::try_from(*destination_olas).unwrap();
+171 +         let destination_account_olas = Pubkey::from(*destination_olas);
+    |
+
+warning: use of a fallible conversion when an infallible one could be used
+   --> programs/lockbox_governor/src/lib.rs:274:34
+    |
+274 |         let source_account_sol = Pubkey::try_from(*source_sol).unwrap();
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: converting `[u8; 32]` to `Pubkey` cannot fail
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_fallible_conversions
+help: use
+    |
+274 -         let source_account_sol = Pubkey::try_from(*source_sol).unwrap();
+274 +         let source_account_sol = Pubkey::from(*source_sol);
+    |
+
+warning: use of a fallible conversion when an infallible one could be used
+   --> programs/lockbox_governor/src/lib.rs:275:35
+    |
+275 |         let source_account_olas = Pubkey::try_from(*source_olas).unwrap();
+    |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: converting `[u8; 32]` to `Pubkey` cannot fail
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_fallible_conversions
+help: use
+    |
+275 -         let source_account_olas = Pubkey::try_from(*source_olas).unwrap();
+275 +         let source_account_olas = Pubkey::from(*source_olas);
+    |
+
+warning: use of a fallible conversion when an infallible one could be used
+   --> programs/lockbox_governor/src/lib.rs:276:35
+    |
+276 |         let destination_account = Pubkey::try_from(*destination).unwrap();
+    |                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: converting `[u8; 32]` to `Pubkey` cannot fail
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_fallible_conversions
+help: use
+    |
+276 -         let destination_account = Pubkey::try_from(*destination).unwrap();
+276 +         let destination_account = Pubkey::from(*destination);
+    |
+
+warning: use of a fallible conversion when an infallible one could be used
+   --> programs/lockbox_governor/src/lib.rs:372:31
+    |
+372 |         let program_account = Pubkey::try_from(*program_id_bytes).unwrap();
+    |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: converting `[u8; 32]` to `Pubkey` cannot fail
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_fallible_conversions
+help: use
+    |
+372 -         let program_account = Pubkey::try_from(*program_id_bytes).unwrap();
+372 +         let program_account = Pubkey::from(*program_id_bytes);
+    |
+
+warning: use of a fallible conversion when an infallible one could be used
+   --> programs/lockbox_governor/src/lib.rs:373:41
+    |
+373 |         let upgrade_authority_account = Pubkey::try_from(*upgrade_authority).unwrap();
+    |                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: converting `[u8; 32]` to `Pubkey` cannot fail
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_fallible_conversions
+help: use
+    |
+373 -         let upgrade_authority_account = Pubkey::try_from(*upgrade_authority).unwrap();
+373 +         let upgrade_authority_account = Pubkey::from(*upgrade_authority);
+    |
+
+warning: use of a fallible conversion when an infallible one could be used
+   --> programs/lockbox_governor/src/lib.rs:434:31
+    |
+434 |         let program_account = Pubkey::try_from(*program_id_bytes).unwrap();
+    |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: converting `[u8; 32]` to `Pubkey` cannot fail
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_fallible_conversions
+help: use
+    |
+434 -         let program_account = Pubkey::try_from(*program_id_bytes).unwrap();
+434 +         let program_account = Pubkey::from(*program_id_bytes);
+    |
+
+warning: use of a fallible conversion when an infallible one could be used
+   --> programs/lockbox_governor/src/lib.rs:435:30
+    |
+435 |         let buffer_account = Pubkey::try_from(*buffer_account_bytes).unwrap();
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: converting `[u8; 32]` to `Pubkey` cannot fail
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_fallible_conversions
+help: use
+    |
+435 -         let buffer_account = Pubkey::try_from(*buffer_account_bytes).unwrap();
+435 +         let buffer_account = Pubkey::from(*buffer_account_bytes);
+    |
+
+warning: use of a fallible conversion when an infallible one could be used
+   --> programs/lockbox_governor/src/lib.rs:436:29
+    |
+436 |         let spill_account = Pubkey::try_from(*spill_account_bytes).unwrap();
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: converting `[u8; 32]` to `Pubkey` cannot fail
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/master/index.html#unnecessary_fallible_conversions
+help: use
+    |
+436 -         let spill_account = Pubkey::try_from(*spill_account_bytes).unwrap();
+436 +         let spill_account = Pubkey::from(*spill_account_bytes);
+    |
+
+warning: `lockbox_governor` (lib) generated 17 warnings (run `cargo clippy --fix --lib -p lockbox_governor` to apply 17 suggestions)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 59.34s
