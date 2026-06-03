@@ -30,7 +30,7 @@
 
 So no real user funds are at risk today. **However**, the code defects are real, and if anyone deploys this code as-is and routes any value through it (SPL token accounts owned by its PDA, or upgrade authority of any upgradeable program assigned to its PDA), those assets become drainable / takeable by any anonymous signer. The audit verdict is FAIL on the code; whether the project has currently sidestepped the risk by not deploying is operational context, not a code-quality acquittal.
 
-**The README's claim «Timelock governed OLAS and SOL Fee Collector on Solana» is not backed by on-chain enforcement.** There is no timelock check, no admin check, no multisig check, no governance check anywhere in the code. The three administrative instructions are open to any signer. Per VCE (verify-claimed-equivalences-against-actual-code) discipline, the README's «timelock governed» claim was checked against the actual code and the equivalence does not hold.
+**The README's claim «Timelock governed OLAS and SOL Fee Collector on Solana» is not backed by on-chain enforcement.** There is no timelock check, no admin check, no multisig check, no governance check anywhere in the code. The three administrative instructions are open to any signer. Per VCE (verify-claimed-equivalences-against-actual-code) discipline, the README's «timelock governed» claim was checked against the actual code and the equivalence does not hold. The architectural-debt analysis in **§2.5 below** explains what the dev was almost certainly building toward — the Olas L1-Governance → Timelock → bridge → L2-Executor pattern used on every other Olas-governed chain — and what would be needed to complete it on the Solana side.
 
 The other 8 Info findings are non-critical hygiene / dead-code / toolchain issues, same family as the prior two Solana audits this week.
 
@@ -102,7 +102,147 @@ For full timelock semantics (delay between proposal and execution), the gate wou
 
 ### Why this didn't blow up on mainnet
 
-The mainnet check shows this program is not deployed and the mainnet lockbox-solana's upgrade authority is some other address (likely a Squads multisig or DAO multisig held off-chain). So the deployment team appears to have chosen the simpler «just point upgrade authority at the multisig directly» path, bypassing this governance-program layer entirely. That's a reasonable operational fallback — but it means **this code never matured to production**, and shipping it without first fixing the gate would re-introduce the vulnerabilities into mainnet.
+The mainnet check shows this program is not deployed and the mainnet lockbox-solana's upgrade authority is some other address (verified as a System-owned EOA, see §2.5 below). So the deployment team appears to have chosen the simpler «just point upgrade authority at an off-chain wallet» path, bypassing this governance-program layer entirely. That's a reasonable operational fallback — but it means **this code never matured to production**, and shipping it without first fixing the gate would re-introduce the vulnerabilities into mainnet.
+
+---
+
+## 2.5 Architectural-debt note — the missing cross-chain bridge layer
+
+This section answers a question the rest of the audit can only point at: **what governance model was the developer actually trying to implement?** «Timelock governed» is the README's phrase, but Solana has no native Timelock pattern (Timelock is an OpenZeppelin Governance contract on Ethereum). So what did the developer have in mind?
+
+### The Olas multi-chain governance pattern
+
+Olas governs its L2 / sidechain / non-EVM deployments via a single canonical pattern:
+
+```
+L1 (Ethereum):
+    OLAS holders vote
+    →  GovernorOLAS (OZ Governance)
+    →  Timelock (delay + queue)
+    →  L1-side bridge sender contract  (e.g., WormholeRelayerTimelock.sol)
+                                            ↓
+                                       [Bridge guardians sign message]
+                                            ↓
+L2 (or non-EVM chain):
+    L2-side bridge Messenger contract  (e.g., WormholeMessenger.sol on Polygon/Optimism/Celo;
+                                              Solana-side analog for Solana)
+        guards: msg.sender == bridge_relayer
+                sourceChain  == L1_chain_id
+                sourceAddress == L1_Timelock_address
+    →  CPI / call into the target contract (here: fee_collector)
+```
+
+This pattern is implemented in `valory-xyz/autonolas-governance` for every EVM L2 / sidechain Olas governs. Reference contract: `contracts/bridges/WormholeMessenger.sol`. The relevant gate is at `receiveWormholeMessages(...)`, lines 80-95:
+
+```solidity
+function receiveWormholeMessages(
+    bytes memory data, bytes[] memory,
+    bytes32 sourceAddress, uint16 sourceChain, bytes32 deliveryHash
+) external payable {
+    if (msg.sender != wormholeRelayer) {                            // ← (1) only Wormhole Relayer can deliver
+        revert TargetRelayerOnly(msg.sender, wormholeRelayer);
+    }
+    if (sourceChain != sourceGovernorChainId) {                     // ← (2) only from L1 (Ethereum)
+        revert WrongSourceChainId(sourceChain, sourceGovernorChainId);
+    }
+    bytes32 governor = sourceGovernor;
+    if (governor != sourceAddress) {                                // ← (3) only from L1 Timelock
+        revert SourceGovernorOnly32(sourceAddress, governor);
+    }
+    // ... only now execute the relayed transaction
+}
+```
+
+These **three checks** ARE the «Timelock governed» enforcement — the L2-side gate verifies that the relayed message originated from the L1 Olas Timelock and arrived via the canonical Wormhole bridge. The Timelock delay happens on L1; the L2 contract just verifies origin.
+
+### Why this is almost certainly what the dev intended for fee_collector
+
+Three pieces of evidence converge on this conclusion:
+
+1. **The 2024-06 internal audit branch was named `bridging4`** (the historical branch holding `audits/internal/`; see §10 cross-refs). The literal name «bridging» indicates that the design context was cross-chain bridge integration.
+2. **The architectural shape matches**: a dedicated «governor program» on the L2 side, holding fee accounts + upgrade authority, expecting to be invoked by a relayed message — exactly the shape of `WormholeMessenger.sol`'s peers on every other Olas-governed L2.
+3. **The three `/// CHECK: Check later` markers in `change_upgrade_authority`'s account struct map cleanly to the three EVM-side checks:**
+   - `program_to_update_authority: UncheckedAccount` — should be constrained to the BPF Upgradeable Loader's program-info account (analog of (1) — only bridge-relayer can deliver / only valid program metadata accepted)
+   - `program_data_to_update_authority: UncheckedAccount` — should be constrained to match `program_to_update_authority`'s ProgramData PDA (analog of (2) — only the right L1 origin)
+   - `destination: UncheckedAccount` — should be constrained to be the new authority specified in the relayed Timelock message (analog of (3) — origin == L1 Timelock; on Solana this manifests as «only the Wormhole gateway program's PDA can sign as the `signer`, AND the relayed payload determines the destination»)
+
+The dev appears to have written the «governor program» skeleton intending to wire it up to a Wormhole gateway later. They never returned. The «CHECK: Check later» markers are placeholders for the bridge-integration checks that were postponed until the bridge wiring decision was made.
+
+### What's missing on the Solana side (the bridge-integration gap)
+
+To complete the pattern as intended, the Solana side needs the equivalent of `WormholeMessenger.sol`'s state and entrypoint. Specifically, `fee_collector` would need to store:
+
+```rust
+pub struct FeeCollector {
+    pub bump: [u8; 1],
+
+    // [MISSING] Wormhole gateway program ID on Solana — the program whose
+    //           PDA-signed CPI is the only legitimate caller into this program.
+    pub wormhole_gateway: Pubkey,
+
+    // [MISSING] L1 chain ID (Ethereum = Wormhole chain ID 2). The relayed VAA
+    //           must come from this chain.
+    pub source_chain_id: u16,
+
+    // [MISSING] L1 source-governor address (Olas Timelock on Ethereum).
+    //           The relayed VAA's emitter MUST equal this.
+    pub source_governor: [u8; 32],
+
+    // (existing) dead state fields per F-4 — should be repurposed
+    pub total_sol_transferred: u64,
+    pub total_olas_transferred: u64,
+}
+```
+
+And every privileged instruction (`transfer`, `transfer_token_account`, `change_upgrade_authority`) would need:
+
+```rust
+pub struct TransferFeeCollector<'info> {
+    // The signer here MUST be a PDA owned by the Wormhole gateway program,
+    // which signed a CPI into fee_collector after verifying:
+    //   - the VAA's source_chain matches collector.source_chain_id
+    //   - the VAA's emitter matches collector.source_governor
+    //   - the VAA payload was «call fee_collector.transfer(amount, dst)»
+    //   - replay defense (deliveryHash not yet seen)
+    #[account(
+        signer,
+        seeds = [/* Wormhole gateway program's expected PDA seed */],
+        bump,
+        seeds::program = collector.wormhole_gateway
+    )]
+    pub signer: Signer<'info>,
+    /* ... */
+}
+```
+
+Or — alternatively — `fee_collector` would itself verify a Wormhole VAA via a CPI to the Wormhole core program inside each instruction (heavier but self-contained). Either way, the gate is «only the Solana bridge endpoint that successfully verified an L1 Timelock-emitted VAA can trigger these instructions».
+
+**The current `fee_collector` has NONE of this.** No `wormhole_gateway` field, no `source_chain_id`, no `source_governor`, no VAA verification, no signer-equality constraint to a bridge PDA. The three `/// CHECK: Check later` markers ARE the bridge-integration checks the dev planned to add and never did.
+
+### Operational reality vs intended design
+
+| Aspect | Intended (Olas multi-chain pattern) | Current mainnet reality |
+|---|---|---|
+| L1 Timelock vote | Ethereum OLAS Governor + Timelock | OLAS Governor + Timelock exist on Ethereum ✓ |
+| Bridge transport | Wormhole VAA L1 → Solana | **Not implemented** |
+| L2 Executor | This `fee_collector` with bridge-origin checks | **fee_collector not deployed; bridge checks absent** |
+| Solana `lockbox-solana` upgrade authority | This `fee_collector` PDA (controlled by bridge-relayed Timelock messages) | EOA `7mQQw6qCj66EtfarNKUfWGUD1pX7SSjHbVMpdJc1roK2` — single off-chain wallet owned by the team, holds upgrade authority directly |
+
+So the architectural intent was clearly (a) — Olas L1 Timelock → Wormhole bridge → Solana fee_collector → controls lockbox-solana. The current deployment is essentially **«hot-wallet bypass»** of the entire L2-Executor layer. Mainnet has been running this way for 21 months because the bridge-integration work was never completed.
+
+### Why this matters beyond «fix the access control»
+
+Even if the simple per-instruction admin-check fix from §1 (add `governance_authority: Pubkey` + `constraint = signer.key() == &collector.governance_authority`) is applied, it would NOT match the intended Olas governance model. A simple admin-check makes `fee_collector` a multisig-like program, not a bridge-relayed-L1-Timelock executor. The architectural choice is:
+
+- **Path A (full bridge integration)** — implement the Wormhole gateway → fee_collector flow with full origin verification. This matches Olas multi-chain governance discipline. Significant work; requires Wormhole integration on Solana side.
+- **Path B (simple Solana-native admin gate)** — store a `governance_authority` Pubkey (a Squads multisig or any chosen admin), gate on `signer == governance_authority`. NOT the original intent; Solana-governance-only; would mean Olas Solana lives on a different governance model than Olas EVM chains.
+- **Path C (retire)** — formal deprecation; mainnet `lockbox-solana` keeps using the EOA-controlled `7mQQw6q...` upgrade authority indefinitely. Honest about what's actually happening, but doesn't fix the EOA centralization risk on lockbox-solana itself.
+
+**Path A is the architecturally consistent answer** — it preserves the «Olas governance is unified across all chains via Ethereum Timelock» property that the Olas multi-chain pattern is built around. It's also what the dev appears to have started building before stalling. The implementation gap is the missing Wormhole VAA verification + state-field plumbing described above.
+
+### Severity recalibration in light of architectural debt
+
+The F-1 / F-2 / F-3 Critical findings remain Critical at the code level, but the root cause is more accurate to describe as «bridge-integration was never completed; placeholder access-control was left as-is». The fix is not «add an admin check» but «complete the bridge-integration flow per Olas multi-chain pattern, OR explicitly choose a simpler governance model and document the departure from the Olas pattern». The audit's recommendation is to make this architectural decision before any code-level fix work begins.
 
 ---
 
@@ -526,21 +666,31 @@ Three observations:
 
 ## 9. Forward-look
 
-**If this program is destined for production (e.g., Olas v2 Solana governance):**
-1. F-1, F-2, F-3 fixes are MANDATORY before deploy. Pattern: add `governance_authority: Pubkey` to `FeeCollector` state at init; gate every privileged instruction by `signer.key == &collector.governance_authority`. Plus type the UncheckedAccount fields where reasonable.
-2. F-10 init-design choice (hardcoded admin vs stored-from-signer vs init-param) needs an explicit decision.
-3. F-11 SOL/OLAS constant enforcement gives F-6 (`ErrorCode::WrongTokenMint`) a use; defense-in-depth on top of F-1/F-2 admin gate.
-4. F-4 / F-5 state-field-update + event-emit coordinated implementation.
-5. F-7 unused imports cleanup.
-6. Tests: the existing `fee_collector_change_upgrade_authority.ts` test is a happy-path test only; needs adversarial tests verifying that non-admin calls reject with the right error.
-7. Re-audit after all fixes land; the source verdict here is FAIL, and that verdict needs to flip to PASS before any production deployment.
+**The fork in the road is described in §2.5 «Architectural-debt note» — Path A (full bridge integration matching Olas multi-chain pattern), Path B (simple Solana-native admin gate), or Path C (formal retirement).** The recommendation is Path A as the architecturally consistent answer, but the choice is the project's to make.
 
-**If this program is being retired (e.g., mainnet `lockbox-solana` will keep using its current `7mQQw6q...` upgrade authority indefinitely; this governance program is dead code):**
+**If Path A — complete the bridge integration (Olas-pattern consistent; recommended):**
+1. Implement Wormhole gateway → fee_collector flow with `wormhole_gateway` + `source_chain_id` + `source_governor` fields in `FeeCollector` state (mirroring `WormholeMessenger.sol`'s state on EVM L2 deployments).
+2. Add per-instruction signer-equality gate that verifies the caller is a PDA of the Wormhole gateway program (or alternatively, verify a VAA inside each instruction via CPI to the Wormhole core program).
+3. F-2, F-3 UncheckedAccount fields tighten to typed accounts with bridge-relayed-payload origin verification (the three `/// CHECK: Check later` markers correspond to the three EVM-side bridge checks; see §2.5).
+4. F-4 / F-5 state-update + event-emit coordinated implementation (the `TransferEvent` becomes meaningful once it fires from bridge-relayed Timelock-authorized transfers).
+5. F-7 unused imports cleanup; F-11 SOL/OLAS mint enforcement gives F-6 a use.
+6. Tests: extend existing happy-path tests with adversarial tests verifying that direct (non-bridge-relayed) calls reject with the right error; VAA-replay defense test; cross-chain origin-equality test.
+7. Coordinated mainnet rollout: deploy `fee_collector`, transfer `lockbox-solana` upgrade authority FROM `7mQQw6q...` EOA TO `fee_collector` PDA via an Olas Timelock-authorized message (chicken-and-egg: the first such transfer needs the off-chain key holder to initiate via legitimate Olas governance proposal).
+8. Re-audit MANDATORY before any of the above is deployed.
+
+**If Path B — simple Solana-native admin gate (acceptable but not Olas-pattern consistent):**
+1. Add `governance_authority: Pubkey` to `FeeCollector` state at init; gate every privileged instruction by `constraint = signer.key() == &collector.governance_authority`. Plus type the UncheckedAccount fields where reasonable.
+2. Document explicitly in README that Solana governance does NOT mirror Olas EVM governance via Ethereum Timelock; it lives on a Squads multisig (or similar) by design. Reword «Timelock governed» to match reality.
+3. F-4 / F-5 / F-7 / F-11 as above.
+4. Re-audit MANDATORY.
+
+**If Path C — formal retirement:**
 1. Mark deprecated in README.
-2. Optionally archive the repo on GitHub.
-3. The Critical findings become moot at the project level.
+2. Document that mainnet `lockbox-solana` upgrade authority remains the off-chain `7mQQw6q...` EOA, and the governance model is «Olas team multisig (off-chain) + dispatch-by-discipline timelock». This is a centralization disclosure but at least honest.
+3. Optionally archive the repo on GitHub.
+4. The F-1 / F-2 / F-3 Critical findings become moot at the project level (no production deployment path for the broken code). Separate centralization concern on `7mQQw6q...` itself is a project-level architectural issue, not a code-level finding against this audit's scope.
 
-**Either way:** the current state — README claims governance discipline, code has none, repo sits dormant 21 months — is the worst-of-both-worlds. Pick a direction.
+**Either way:** the current state — README claims governance discipline matching the Olas multi-chain pattern, code has neither bridge integration nor admin check, repo sits dormant 21 months, mainnet `lockbox-solana` runs on an off-chain EOA — is the worst-of-three-paths. Pick a direction.
 
 ---
 
@@ -550,9 +700,10 @@ Three observations:
 - Stated mainnet program ID: `DWDGo2UkBUFZ3VitBfWRBMvRnHr7E2DSh57NK27xMYaB` — **not deployed** as of 2026-06-03
 - Mainnet `lockbox-solana` upgrade authority (verified 2026-06-03): `7mQQw6qCj66EtfarNKUfWGUD1pX7SSjHbVMpdJc1roK2` (NOT this PDA)
 - ProgramData PDA of mainnet `lockbox-solana`: `4db7h3HiTf8DHe5WYLbkEFiG7J7R5xJKqvHvpWuz8KXc`
-- Prior internal audit branch: `bridging4` (2024-06; the branch contains the historical `audits/internal/` work but was never merged to main)
+- Prior internal audit branch: `bridging4` (2024-06; the branch contains the historical `audits/internal/` work but was never merged to main) — the literal branch name «bridging» is consistent with the Wormhole bridge integration intent analyzed in §2.5
 - Sister Solana repos (separate audits): `lockbox-solana` (audited as `audits/internal2/` 2026-06-02), `registries-solana` (audited as `audits/internal1/` 2026-06-02)
 - Architectural reference: README at repo root claims «Timelock governed OLAS and SOL Fee Collector on Solana»
+- **Olas multi-chain governance pattern reference**: `valory-xyz/autonolas-governance/contracts/bridges/WormholeMessenger.sol` — the canonical L2-Executor implementation used on every EVM L2 / sidechain Olas governs. `receiveWormholeMessages(...)` lines 80-95 contain the three checks (msg.sender == bridge_relayer + sourceChain == L1 + sourceAddress == L1 Timelock) that form the «Timelock governed» enforcement on the L2 side. Equivalent Solana implementation is what this `fee_collector` was almost certainly intended to be — see §2.5.
 
 ---
 
