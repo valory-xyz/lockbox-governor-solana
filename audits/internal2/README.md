@@ -170,54 +170,74 @@ The dev appears to have written the «governor program» skeleton intending to w
 
 ### What's missing on the Solana side (the bridge-integration gap)
 
-To complete the pattern as intended, the Solana side needs the equivalent of `WormholeMessenger.sol`'s state and entrypoint. Specifically, `fee_collector` would need to store:
+**Solana-vs-EVM design note: the EVM pattern of «separate Messenger contract + separate Executor contract» does NOT translate directly to Solana.** EVM contracts are cheap to deploy (just gas) and composability via inter-contract calls is the dominant idiom, so EVM Olas ships `WormholeMessenger.sol` as a dedicated contract. Solana programs are different: deploy cost is non-trivial (rent + buffer accounts), each program adds operational overhead (its own upgrade ceremony, its own program ID, its own state), and the Solana ecosystem strongly prefers **fewer, larger programs over many small composable ones**. Mechanically porting the EVM «two-contract» structure into «two Solana programs» would be an EVM-anti-pattern on Solana.
+
+The Wormhole protocol on Solana is already aware of this and ships a **single shared Wormhole Core program** at the well-known address `worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth`. Every Solana program that wants to consume bridged messages reads from this shared core — no per-protocol Messenger deployment needed. The idiomatic Solana flow:
+
+1. **Off-chain relayer** posts a Wormhole VAA to the Wormhole Core program (one-time, via `post_vaa`); the core program parses + stores the posted VAA in a Core-owned account, attesting that guardians signed it.
+2. **fee_collector instruction** is then called with the posted-VAA account passed in as an input account.
+3. **fee_collector reads + verifies the VAA inline** (no separate Messenger program; no CPI into a bespoke gateway):
+   - Verify `vaa_account.owner == WORMHOLE_CORE_PROGRAM_ID` (the posted VAA must come from the legitimate Wormhole Core).
+   - Deserialize the posted-VAA payload.
+   - Check `vaa.emitter_chain == collector.source_chain_id` (Ethereum).
+   - Check `vaa.emitter_address == collector.source_governor` (Olas Timelock on Ethereum).
+   - Check `vaa.consistency_level` and replay defense (mark VAA hash as consumed).
+   - Decode the action from the VAA payload and execute it directly.
+
+The whole flow lives in **one program** (`fee_collector`). This is the Solana-idiomatic equivalent of the EVM «Messenger + Executor» pair — collapsed into a single program that knows how to consume bridged messages and act on them.
+
+So the state additions to `FeeCollector` are minimal:
 
 ```rust
 pub struct FeeCollector {
     pub bump: [u8; 1],
 
-    // [MISSING] Wormhole gateway program ID on Solana — the program whose
-    //           PDA-signed CPI is the only legitimate caller into this program.
-    pub wormhole_gateway: Pubkey,
-
-    // [MISSING] L1 chain ID (Ethereum = Wormhole chain ID 2). The relayed VAA
+    // [MISSING] L1 chain ID (Ethereum = Wormhole chain ID 2). The posted VAA
     //           must come from this chain.
     pub source_chain_id: u16,
 
     // [MISSING] L1 source-governor address (Olas Timelock on Ethereum).
-    //           The relayed VAA's emitter MUST equal this.
+    //           The posted VAA's emitter MUST equal this.
     pub source_governor: [u8; 32],
 
-    // (existing) dead state fields per F-4 — should be repurposed
+    // [MISSING] Replay protection — set of consumed VAA hashes (bounded;
+    //           or a circular buffer like processed_tx in other Solana
+    //           protocols).
+    pub consumed_vaas: /* ring buffer of [u8; 32] */,
+
+    // (existing) dead state fields per F-4 — should be repurposed for
+    // counting bridge-executed transfers
     pub total_sol_transferred: u64,
     pub total_olas_transferred: u64,
 }
 ```
 
-And every privileged instruction (`transfer`, `transfer_token_account`, `change_upgrade_authority`) would need:
+And the per-instruction account structure adds the posted-VAA account (Wormhole Core program ID is hardcoded as a `const` like SOL / OLAS — F-11):
 
 ```rust
+const WORMHOLE_CORE_PROGRAM_ID: Pubkey = pubkey!("worm2ZoG2kUd4vFXhvjh93UUH596ayRfgQ2MgjNMTth");
+
 pub struct TransferFeeCollector<'info> {
-    // The signer here MUST be a PDA owned by the Wormhole gateway program,
-    // which signed a CPI into fee_collector after verifying:
-    //   - the VAA's source_chain matches collector.source_chain_id
-    //   - the VAA's emitter matches collector.source_governor
-    //   - the VAA payload was «call fee_collector.transfer(amount, dst)»
-    //   - replay defense (deliveryHash not yet seen)
-    #[account(
-        signer,
-        seeds = [/* Wormhole gateway program's expected PDA seed */],
-        bump,
-        seeds::program = collector.wormhole_gateway
-    )]
+    // Anyone can be the signer (it's just a relayer paying for the tx).
+    // The gate is on the VAA, not on the signer.
     pub signer: Signer<'info>,
-    /* ... */
+
+    // The posted VAA account must be owned by the Wormhole Core program
+    // (so we know guardians signed it). fee_collector then deserializes
+    // the payload, verifies emitter_chain + emitter_address match
+    // collector.source_chain_id / source_governor, runs replay defense,
+    // and only then executes the requested action.
+    /// CHECK: owner-checked at instruction entry against
+    ///        WORMHOLE_CORE_PROGRAM_ID; payload + emitter verified
+    ///        against collector state.
+    pub posted_vaa: UncheckedAccount<'info>,
+    /* ... rest of accounts: collector_account, destination, etc. ... */
 }
 ```
 
-Or — alternatively — `fee_collector` would itself verify a Wormhole VAA via a CPI to the Wormhole core program inside each instruction (heavier but self-contained). Either way, the gate is «only the Solana bridge endpoint that successfully verified an L1 Timelock-emitted VAA can trigger these instructions».
+This **inverts the «no signer check» problem** from §F-1 / §F-2 / §F-3: the `signer` is genuinely just the relayer (anyone), but the GATE is now «posted VAA exists, came from Olas L1 Timelock, hasn't been replayed». The three `/// CHECK: Check later` markers ARE the bridge-integration checks the dev planned to add — but the idiomatic Solana form is «inline VAA verification in this same program», not «separate gateway program with PDA-signed CPI».
 
-**The current `fee_collector` has NONE of this.** No `wormhole_gateway` field, no `source_chain_id`, no `source_governor`, no VAA verification, no signer-equality constraint to a bridge PDA. The three `/// CHECK: Check later` markers ARE the bridge-integration checks the dev planned to add and never did.
+**The current `fee_collector` has NONE of this.** No `source_chain_id`, no `source_governor`, no posted-VAA verification, no Wormhole Core program reference, no replay defense, no payload decoding. The bridge-integration scope is real work, but it's all WITHIN this one program — no second program needed.
 
 ### Operational reality vs intended design
 
@@ -669,13 +689,13 @@ Three observations:
 **The fork in the road is described in §2.5 «Architectural-debt note» — Path A (full bridge integration matching Olas multi-chain pattern), Path B (simple Solana-native admin gate), or Path C (formal retirement).** The recommendation is Path A as the architecturally consistent answer, but the choice is the project's to make.
 
 **If Path A — complete the bridge integration (Olas-pattern consistent; recommended):**
-1. Implement Wormhole gateway → fee_collector flow with `wormhole_gateway` + `source_chain_id` + `source_governor` fields in `FeeCollector` state (mirroring `WormholeMessenger.sol`'s state on EVM L2 deployments).
-2. Add per-instruction signer-equality gate that verifies the caller is a PDA of the Wormhole gateway program (or alternatively, verify a VAA inside each instruction via CPI to the Wormhole core program).
-3. F-2, F-3 UncheckedAccount fields tighten to typed accounts with bridge-relayed-payload origin verification (the three `/// CHECK: Check later` markers correspond to the three EVM-side bridge checks; see §2.5).
+1. Add `source_chain_id` (`u16`), `source_governor` (`[u8; 32]`), and a VAA-replay-protection structure (e.g. `consumed_vaas` ring buffer) to `FeeCollector` state at init. Hardcode `WORMHOLE_CORE_PROGRAM_ID` as a module-level `const` (alongside SOL / OLAS — F-11).
+2. **Single program, not two**: keep all bridge-message handling INSIDE `fee_collector`. Each privileged instruction accepts a `posted_vaa: UncheckedAccount` and verifies it inline (owner == Wormhole Core; emitter_chain == `collector.source_chain_id`; emitter_address == `collector.source_governor`; VAA hash not yet consumed; payload decodes to the requested action). The Solana idiomatic alternative to «separate Messenger contract» is inline VAA consumption — see §2.5 for the rationale (Solana prefers fewer/larger programs; Wormhole Core is a shared deployment already on-chain).
+3. F-2, F-3 UncheckedAccount fields tighten: the bridge-relayed payload determines `destination` / `program_to_update_authority` etc.; the program reads them from the verified VAA payload rather than trusting caller-supplied account inputs (the three `/// CHECK: Check later` markers correspond to fields that should be VAA-derived).
 4. F-4 / F-5 state-update + event-emit coordinated implementation (the `TransferEvent` becomes meaningful once it fires from bridge-relayed Timelock-authorized transfers).
 5. F-7 unused imports cleanup; F-11 SOL/OLAS mint enforcement gives F-6 a use.
-6. Tests: extend existing happy-path tests with adversarial tests verifying that direct (non-bridge-relayed) calls reject with the right error; VAA-replay defense test; cross-chain origin-equality test.
-7. Coordinated mainnet rollout: deploy `fee_collector`, transfer `lockbox-solana` upgrade authority FROM `7mQQw6q...` EOA TO `fee_collector` PDA via an Olas Timelock-authorized message (chicken-and-egg: the first such transfer needs the off-chain key holder to initiate via legitimate Olas governance proposal).
+6. Tests: extend existing happy-path tests with adversarial tests verifying — (a) direct call without a posted VAA rejects; (b) VAA from wrong emitter_chain rejects; (c) VAA from wrong emitter_address rejects; (d) VAA replay rejects; (e) malformed payload rejects.
+7. Coordinated mainnet rollout: deploy `fee_collector`, then via legitimate Olas L1 Timelock governance proposal, transfer `lockbox-solana` upgrade authority FROM the `7mQQw6q...` EOA TO the `fee_collector` PDA. Chicken-and-egg: this first transfer must be initiated by the off-chain key holder of `7mQQw6q...` (it can't be relayed via the bridge yet since fee_collector isn't yet wired in).
 8. Re-audit MANDATORY before any of the above is deployed.
 
 **If Path B — simple Solana-native admin gate (acceptable but not Olas-pattern consistent):**
